@@ -43,6 +43,22 @@ node <path-to>/skills/openwiki-viewer/build.js "<folder>" --open
 
 PowerShell: use `$HOME` instead of `~` (e.g. `node "$HOME\.claude\skills\openwiki-viewer\build.js" --open`).
 
-It searches the given folder (default: current directory) for `openwiki/` folders — the folder itself,
-up to 4 levels below it, then up to 3 parents — and writes one HTML file per project under the
-skill's `out/` folder. See `skills/openwiki-viewer/SKILL.md` for details.
+### Choosing what to view
+
+The optional `<folder>` argument decides which wikis go into the viewer (default: current directory):
+
+| Pass | Result |
+| --- | --- |
+| A single repo (`C:/code/my-api`) | Just that repo's wiki |
+| A workspace or root folder (`C:/code`, `~/Desktop`) | Every repo below it that has an `openwiki/` folder, up to 4 levels deep, all in one page |
+| A subfolder inside a repo (`C:/code/my-api/src`) | Nothing found below it, so it looks up to 3 parent folders and finds that repo's wiki |
+| Nothing | Same rules, starting from the current directory |
+
+Folders such as `node_modules`, `.git`, `target`, `dist` and `build` are skipped. Repos whose folders
+share a name are labelled by their path under the root.
+
+Output goes to one HTML file per root under the skill's `out/` folder, so different projects never
+overwrite each other. Use `--out <file>` to write somewhere else, and `--open` to open the result in
+your browser. The page is a snapshot, so rebuild it after generating or updating a wiki.
+
+See `skills/openwiki-viewer/SKILL.md` for details.
