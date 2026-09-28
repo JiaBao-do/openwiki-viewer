@@ -1,0 +1,11 @@
+{
+  "name": "openwiki-viewer-marketplace",
+  "owner": { "name": "JiaBao-do" },
+  "plugins": [
+    {
+      "name": "openwiki-viewer",
+      "source": "./",
+      "description": "Browse generated OpenWiki pages in a single self-contained HTML viewer."
+    }
+  ]
+}

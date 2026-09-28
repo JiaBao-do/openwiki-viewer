@@ -1,0 +1,5 @@
+{
+  "name": "openwiki-viewer",
+  "description": "Build and open a browsable HTML viewer for generated OpenWiki pages (<repo>/openwiki/**/*.md). Zero dependencies; needs only Node.js.",
+  "version": "1.0.0"
+}
