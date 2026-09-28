@@ -104,12 +104,18 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 function resolveLink(href, cur) {
   if (/^[a-z][a-z0-9+.-]*:/i.test(href) || href.startsWith("#")) return { ext: true, href };
   const [file, frag] = href.split("#");
-  const parts = (cur.repo + "/" + cur.path).split("/"); parts.pop();
-  for (const seg of file.split("/")) {
+  // A leading "/" means the repo root, where the wiki lives under openwiki/ ("/openwiki/a/b.md").
+  const abs = file.startsWith("/");
+  const parts = abs ? [cur.repo] : (cur.repo + "/" + cur.path).split("/");
+  if (!abs) parts.pop();
+  const segs = file.split("/");
+  if (abs && segs[1] === "openwiki") segs.splice(1, 1);
+  for (const seg of segs) {
     if (seg === "..") parts.pop(); else if (seg && seg !== ".") parts.push(seg);
   }
   const key = parts.join("/");
-  if (pages.has(key)) return { ext: false, href: "#" + key };
+  const hit = [key, key + ".md"].find((k) => pages.has(k));
+  if (hit) return { ext: false, href: "#" + hit, page: pages.get(hit) };
   return { ext: false, href: "#", missing: true };
 }
 
@@ -117,6 +123,14 @@ function inline(s, cur) {
   const codes = [];
   s = s.replace(/`([^`]+)`/g, (_, c) => { codes.push(c); return "\u0000" + (codes.length - 1) + "\u0000"; });
   s = esc(s);
+  // [[/openwiki/path/page.md]] or [[path|label]] wikilinks
+  s = s.replace(/\[\[([^\][|]+?)(?:\|([^\]]+?))?\]\]/g, (_, target, label) => {
+    const t = target.trim().replace(/&amp;/g, "&");
+    let r = resolveLink(t, cur);
+    if (r.missing && !t.startsWith("/")) r = resolveLink("/" + t, cur); // wiki-root relative
+    const text = label || (r.page ? esc(r.page.title) : target.trim());
+    return `<a href="${esc(r.href)}"${r.missing ? ' title="page not found"' : ""}>${text}</a>`;
+  });
   s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, text, href) => {
     const r = resolveLink(href.replace(/&amp;/g, "&"), cur);
     if (r.ext) return `<a href="${esc(r.href)}" target="_blank" rel="noopener">${text}</a>`;
