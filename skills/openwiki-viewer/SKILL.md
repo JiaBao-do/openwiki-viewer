@@ -10,7 +10,6 @@ Zero-dependency Node tool (plain `node` only; install nothing). It reads the gen
 Scripts live in `~/.claude/skills/openwiki-viewer/`:
 
 - `build.js [root] [--open] [--out <file>]` — build the page. Prints the output path and what it found.
-- `open-wiki.cmd [root]` — Windows launcher: same as `build.js [root] --open`.
 - `serve.js [root] [--port N]` — optional live server on `http://127.0.0.1:8899/` that rebuilds on each page load.
 
 ## How wikis are found
@@ -34,7 +33,7 @@ By default each root gets its own file, `~/.claude/skills/openwiki-viewer/out/<r
    ```
    node ~/.claude/skills/openwiki-viewer/build.js "<root>" --open
    ```
-   (omit `"<root>"` to use the current directory). On Windows `open-wiki.cmd "<root>"` does the same.
+   (omit `"<root>"` to use the current directory). In PowerShell use `$HOME` instead of `~`.
 3. Report the output path and the repos/pages count it printed. If it exits with "No openwiki/ folders found", the wiki hasn't been generated yet — run the `openwiki` skill first, or pick another root.
 
 ## Notes
